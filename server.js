@@ -37,7 +37,29 @@ app.get("/api/health", function(req, res){
     res.send(`Backend server is status: active at time: ${new Date()}`);
 })
 
+//routing
+
 app.use("/api/admin", admin);
+
+
+//error handling
+
+app.use(function(req, res, next){
+    const err = new Error("Something went wrong! Please try after some time.");
+    err.status = 404;
+    next(err);
+})
+
+app.use(function(err, req, res, next){
+    res.status(err.status || 500);
+    res.send({
+        error: {
+            status: err.status || 500,
+            message: err.message
+        }
+    })
+})
+
 
 //creating server
 

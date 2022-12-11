@@ -6,6 +6,7 @@ const app = express();
 const mongoose = require("mongoose");
 const admin = require("./Routes/admin")
 
+
 //connection port and host
 
 port=process.env.PORT || 3000;
@@ -37,18 +38,22 @@ app.get("/api/health", function(req, res){
     res.send(`Backend server is status: active at time: ${new Date()}`);
 })
 
+
 //routing
 
 app.use("/api/admin", admin);
 
 
-//error handling
+//creating error and calling error handler
 
 app.use(function(req, res, next){
     const err = new Error("Something went wrong! Please try after some time.");
     err.status = 404;
     next(err);
 })
+
+
+//error handling
 
 app.use(function(err, req, res, next){
     res.status(err.status || 500);

@@ -5,7 +5,11 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const admin = require("./Routes/admin")
+const bodyParser = require("body-parser")
+const discover = require("./Routes/discover")
 
+
+app.use(bodyParser.urlencoded({extended: true}));
 
 //connection port and host
 
@@ -16,20 +20,6 @@ host=process.env.HOST || "localhost";
 //mongodb connection and initialization
 
 mongoose.connect(`${process.env.mongodb}/assessment`);
-
-const galleryCategorySchema = mongoose.Schema({
-    name: String
-}, {timestamps: true});
-
-const imagesGallerySchema = mongoose.Schema({
-    name: String,
-    category: Array,
-    likes: Number,
-    imageLink: String
-}, {timestamps: true});
-
-const galleryCategory = mongoose.model("GalleryCategory", galleryCategorySchema);
-const imagesGallery = mongoose.model("ImagesGallery", imagesGallerySchema);
 
 
 //api callings
@@ -42,7 +32,7 @@ app.get("/api/health", function(req, res){
 //routing
 
 app.use("/api/admin", admin);
-
+app.use("/api/discover", discover);
 
 //creating error and calling error handler
 

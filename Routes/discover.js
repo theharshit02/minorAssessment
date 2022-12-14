@@ -24,32 +24,14 @@ route.get("/listCategories", function(req, res){
 })
 
 
-//get 4 images based on category
+//get 4 images and filters based on created date (asc and desc) and likes and shuffle
 
-route.get("/getImages/:category", function(req, res){
+route.get("/:category", async function(req, res){
     category = req.params.category
-    images =[]
-    imagesGallery.find(function(err, result){
-        result.forEach((i)=>{
-            x = i.category
-            x.forEach((cat)=>{
-                if(cat === req.params.category){
-                    images.push(i.name)   
-                }
-            })
-        })
-        res.send(images.slice(0,4))
-    })
-
-    
-})
-
-
-//filters based on created date (asc and desc) and likes
-
-route.get("/filter", async function(req, res){
     sortDate = req.query.sortDate
     likes = parseInt(req.query.likes)
+    shuffle = parseInt(req.query.shuffle)
+
 
     if(likes === 1){
         filter = {likes: 1}
@@ -58,23 +40,36 @@ route.get("/filter", async function(req, res){
         filter = {}
     }
 
+
     let data = []
     if(sortDate === "asc"){
-        x = await imagesGallery.find(filter).sort({createdAt: 1})
+        x = await imagesGallery.find({category: {$in: [category]}, filter}).sort({createdAt: 1})
         x.forEach((list)=>{
             data.push(list.name)
         })
     }
     else if(sortDate === "desc"){
-        x = await imagesGallery.find({likes: liked}).sort({createdAt: -1})
+        x = await imagesGallery.find({category: {$in: [category]}, filter}).sort({createdAt: -1})
         x.forEach((list)=>{
             data.push(list.name)
         })
     }
-
-    res.send(data)
     
+
+    let shuffleData = []
+    if(shuffle === 1){
+        for (i=0; i<data.length; i++){
+            x = Math.floor(Math.random()*data.length)
+            shuffleData[i] = data[x];        
+        }
+        res.send(shuffleData.slice(0,4))
+    }
+    else if(shuffle === 0){
+        res.send(data.slice(0,4))
+    }
 })
+
+
 
 route.use((req, res, next)=>{
     const err = new Error("Route not found.");

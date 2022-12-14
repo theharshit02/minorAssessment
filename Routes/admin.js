@@ -18,16 +18,32 @@ const galleryCategory = mongoose.model("GalleryCategory", galleryCategorySchema)
 const imagesGallery = mongoose.model("ImagesGallery", imagesGallerySchema);
 
 
+//creating a new category
 
-route.post("/categories", function(req, res){
+route.post("/categories/:category", function(req, res){
     var myobj = new galleryCategory(
-        {name: "nature"}
+        {name: req.params.category}
     )
-
-    try{
-        if(myobj.save())
-            console.log("Successfully category saved");
-        else throw "Failed to save category"
+    
+    try{       
+        galleryCategory.find({name: req.params.category}, function(err, result){
+            if(err){
+                console.log(err);
+            }
+            else{
+                if(result.length !== 0){
+                    console.log("Category already exist!! Enter a new category");
+                }
+                else{
+                    if(myobj.save()){
+                        console.log("Successfully category saved");
+                    }
+                    else{
+                        throw "Failed to save category"
+                    }
+                }
+            }
+        })
     }
     catch(err){
         console.log(err);
@@ -35,9 +51,12 @@ route.post("/categories", function(req, res){
     res.send("inside categories");
 });
 
+
+//saving images
+
 route.post("/images", function(req, res){
     var imgs = new imagesGallery({
-        name: "trees",
+        name: "animal",
         category: "Nature",
         likes: 1,
         imageLink: "google.com"

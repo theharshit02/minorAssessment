@@ -44,6 +44,38 @@ route.get("/getImages/:category", function(req, res){
     
 })
 
+
+//filters based on created date (asc and desc) and likes
+
+route.get("/filter", async function(req, res){
+    sortDate = req.query.sortDate
+    likes = parseInt(req.query.likes)
+
+    if(likes === 1){
+        filter = {likes: 1}
+    }
+    else{
+        filter = {}
+    }
+
+    let data = []
+    if(sortDate === "asc"){
+        x = await imagesGallery.find(filter).sort({createdAt: 1})
+        x.forEach((list)=>{
+            data.push(list.name)
+        })
+    }
+    else if(sortDate === "desc"){
+        x = await imagesGallery.find({likes: liked}).sort({createdAt: -1})
+        x.forEach((list)=>{
+            data.push(list.name)
+        })
+    }
+
+    res.send(data)
+    
+})
+
 route.use((req, res, next)=>{
     const err = new Error("Route not found.");
     err.status = 404;

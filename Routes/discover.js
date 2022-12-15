@@ -26,7 +26,7 @@ route.get("/listCategories", function(req, res){
 
 //get 4 images and filters based on created date (asc and desc) and likes and shuffle
 
-route.get("/:category", async function(req, res){
+route.get("/getimages/:category", async function(req, res){
     category = req.params.category
     sortDate = req.query.sortDate
     likes = parseInt(req.query.likes)
@@ -69,6 +69,27 @@ route.get("/:category", async function(req, res){
     }
 })
 
+
+//mark an image favourite
+
+route.get("/favourite/:id", async function(req, res){
+    id = req.params.id
+    if(id !== ""){
+        imagesGallery.findById(id, async function(err, result){
+            if(err){
+                console.log(err);
+            }
+            else{
+                console.log("before update: ",result);
+                likeCount = result.likes
+                likeCount += 1
+                await imagesGallery.findByIdAndUpdate(id, {likes : likeCount})
+                x = await imagesGallery.findById(id)
+                console.log("after update", x);
+            }
+        })
+    }
+})
 
 
 route.use((req, res, next)=>{
